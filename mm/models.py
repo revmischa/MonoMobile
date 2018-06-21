@@ -25,6 +25,13 @@ class Network(db.Model):
     subscribers = db.relationship('Subscriber', back_populates='network')
     subscribers_query = db.relationship('Subscriber', back_populates='network', lazy='dynamic')
 
+    @classmethod
+    def get_default(cls):
+        # for now just return first
+        # this should look up by name from config
+        net = cls.query.first()
+        return net
+
 
 class Subscriber(db.Model):
     id = Column(Integer, primary_key=True)
@@ -33,6 +40,7 @@ class Subscriber(db.Model):
     network_id = Column(Integer, ForeignKey('network.id', name='sub_net_fk'), nullable=False)
     network = db.relationship(Network, back_populates='subscribers', foreign_keys=[network_id])
     sim_sid = Column(Text, nullable=False)
+    iccid = Column(Text, nullable=True)
     email = Column(Text, nullable=True)
     nickname = Column(Text, nullable=True)
     stripe_customer_id = Column(Text)

@@ -1,4 +1,4 @@
-from mm import app, db
+from mm import app, db, twil
 from flask import request
 from mm.views import APIBadRequestError
 from mm.models import Subscriber, Network
@@ -7,19 +7,33 @@ from mm.models import Subscriber, Network
 @app.route('/api/register', methods=['POST'])
 def api_register():
     vals = request.get_json(force=True)
-    sim_sid = vals.get('sim_sid')
-    if not sim_sid:
-        raise APIBadRequestError('sim_sid is required')
+    iccid_last5 = vals.get('iccid_last5')
+    if not iccid_last5:
+        raise APIBadRequestError('iccid_last5 is required')
+
+    if len(iccid_last5) != 5 or not iccid_last5.upper().endswith('F'):
+        raise APIBadRequestError('Invalid ICCID. Must be five digits and end with "F"')
 
     network_id = vals.get('network_id')
-    if not network_id:
-        raise APIBadRequestError('network_id is required')
-    network = Network.query.get(network_id)
-    if not network:
-        raise APIBadRequestError("invalid network")
+    if network_id:
+        network = Network.query.get(network_id)
+        if not network:
+            raise APIBadRequestError("invalid network ID")
+    else:
+        network = Network.get_default()
+        if not network:
+            raise APIBadRequestError('network_id is required')
+
+    sim = twil.find_sim(iccid_last5=iccid_last5)
+    if not sim:
+        raise APIBadRequestError(f"ICCID {iccid_last5} not found.")
+
+    sid = sim.sid
+    print(sim)
+    print(sid)
 
     # look for an existing subscriber row
-    sub = network.subscribers_query.filter_by(sim_sid=sim_sid).one_or_none()
+    sub = network.subscribers_query.filter_by(sim_sid=sid).one_or_none()
     if not sub:
         # TODO: validate SID
         sub = Subscriber(sim_sid=sim_sid)

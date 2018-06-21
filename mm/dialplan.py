@@ -32,6 +32,8 @@ class Dialplan:
 
     def get_subscriber(self, sim_sid: str) -> Optional[Subscriber]:
         """Look up subscriber by SIM."""
+        if sim_sid.startswith('sim:'):
+            sim_sid = sim_sid.split('sim:', maxsplit=1)[0]
         return Subscriber.query.filter_by(sim_sid=sim_sid).one_or_none()
 
     def get_subscriber_by_dialed_number(self, *, network: Network, to: str) -> Optional[Subscriber]:
@@ -47,7 +49,7 @@ class Dialplan:
 
 class SMSDialplan(Dialplan):
 
-    def handle_outbound_sms(self, to: str, form: TwilioCallbackRequest):
+    def handle_outbound_sms(self, from_: str, to: str, req: TwilioCallbackRequest):
         if to == '420':
             return self.make_message_response("special number")
         else:
@@ -55,7 +57,7 @@ class SMSDialplan(Dialplan):
 
 
 class VoiceDialplan(Dialplan):
-   def handle_outbound_call(self, from_: str, to: str):
+   def handle_outbound_call(self, from_: str, to: str, req: TwilioCallbackRequest):
        # look up subscriber
        sub = self.get_subscriber(sim_sid=from_)
        if not sub:

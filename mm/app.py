@@ -22,5 +22,8 @@ if not app.config.get('TWILIO_ACCT_SID') or not app.config.get('TWILIO_AUTH_TOKE
     print("Please configure TWILIO_ACCT_SID and TWILIO_AUTH_TOKEN")
 
 # database
+if os.environ.get("DUMP_SQL"):
+    print("Enabling query logging")
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 db = SQLAlchemy(app)
 Migrate(app, db)

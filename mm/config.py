@@ -14,10 +14,14 @@ class Config(object):
     # dialplan
     DIALPLAN_EXT_DIAL_PREFIX = '#'  # prefix for dialing subscribers by extension
 
+    # set this to a string to make dev or single-network deployments simple
+    DEFAULT_NETWORK = None
+
 class ProductionConfig(Config):
-    DATABASE_URI = 'mysql://user@localhost/foo'
+    DEBUG = False
 
 class DevelopmentConfig(Config):
+    DEFAULT_NETWORK = 'development'
     DEBUG = True
 
 class TestingConfig(Config):
