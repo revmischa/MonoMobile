@@ -9,6 +9,7 @@ sms_dialplan = SMSDialplan()
 # views
 import mm.views.site
 import mm.views.register
+import mm.views.network
 import mm.views.twilio
 
 __all__ = ('app', 'db', 'twil')
