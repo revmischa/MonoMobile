@@ -5,6 +5,8 @@ import os
 import sys
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
+
 lib_path = os.path.abspath(os.path.join(__file__, '..', '..'))
 sys.path.append(lib_path)
 
@@ -13,6 +15,9 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 app = Flask(__name__)
+
+# CORS
+CORS(app)
 
 # load configuration
 config_obj = os.environ.get('MM_CONFIG', 'mm.config.DevelopmentConfig')

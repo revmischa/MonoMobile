@@ -13,3 +13,6 @@ reset-db:
 
 auto-rev:
 	$(ALEMBIC) revision --autogenerate
+
+migrate:
+	$(ALEMBIC) upgrade head

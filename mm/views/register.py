@@ -11,6 +11,14 @@ def api_register():
     if not iccid_last5:
         raise APIBadRequestError('iccid_last5 is required')
 
+    email = vals.get('email')
+    if not email:
+        raise APIBadRequestError('Please enter an email address')
+
+    nick = vals.get('nickname')
+    if not nick:
+        raise APIBadRequestError('Please enter a nickname to use on the service')
+
     if len(iccid_last5) != 5 or not iccid_last5.upper().endswith('F'):
         raise APIBadRequestError('Invalid ICCID. Must be five digits and end with "F"')
 
@@ -29,20 +37,21 @@ def api_register():
         raise APIBadRequestError(f"ICCID {iccid_last5} not found.")
 
     sid = sim.sid
-    print(sim)
-    print(sid)
 
     # look for an existing subscriber row
     sub = network.subscribers_query.filter_by(sim_sid=sid).one_or_none()
     if not sub:
         # TODO: validate SID
-        sub = Subscriber(sim_sid=sim_sid)
+        sub = Subscriber(sim_sid=sid)
         network.subscribers.append(sub)
         # db.session.add(sub)  # insert the subscriber row
 
     # update row
     nickname = vals.get('nickname')
     sub.nickname = nickname
+    sub.email = email
+    sub.iccid = sim.iccid
+    sub.sid = sim.sid
     db.session.commit()
 
     return "ok"
