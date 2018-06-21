@@ -17,7 +17,7 @@ app = Flask(__name__)
 # load configuration
 config_obj = os.environ.get('MM_CONFIG', 'mm.config.DevelopmentConfig')
 app.config.from_object(config_obj)
-app.config.from_pyfile('../local.cfg', silent=False)
+app.config.from_pyfile('../local.cfg', silent=True)
 if not app.config.get('TWILIO_ACCT_SID') or not app.config.get('TWILIO_AUTH_TOKEN'):
     print("Please configure TWILIO_ACCT_SID and TWILIO_AUTH_TOKEN")
 
