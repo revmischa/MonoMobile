@@ -20,7 +20,6 @@ class Twil(twilio.rest.Client):
         assert len(iccid_last5) == 5
         # we don't want the 'F' on the end - it's just for decoration
         iccid_last4 = iccid_last5[0:4]
-        print(f"last4: {iccid_last4}")
         # get list of SIMs
         sim_list: List[SIMInstance] = self.wireless.sims.list()
         # TODO: handle paging, this only returns a page

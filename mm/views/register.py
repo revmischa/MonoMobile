@@ -54,4 +54,7 @@ def api_register():
     sub.sid = sim.sid
     db.session.commit()
 
+    sub.configure_webhooks()
+    # sub.send_registered_messsage()
+
     return "ok"

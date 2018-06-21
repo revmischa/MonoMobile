@@ -1,4 +1,5 @@
-from mm.app import db
+from mm.app import db, app
+from flask import url_for
 from sqlalchemy import func, DDL, Table
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import Integer, Text, TIMESTAMP, Boolean
@@ -47,6 +48,32 @@ class Subscriber(db.Model):
     extension = Column(Integer, nullable=False)
     sent_welcome_message = Column(Boolean, nullable=False, server_default='F')
     onboarded = Column(Boolean, nullable=False, server_default='F')
+
+    def get_ext_display(self):
+        # TEMP
+        return f'*{self.extension}'
+
+    def configure_webhooks(self):
+        from mm import twil
+        sid = self.sim_sid
+        twil.wireless.sims(sid).update(
+            voice_method='POST',
+            voice_url=url_for('twil_voice_out', _external=True),
+            sms_method='POST',
+            sms_url=url_for('twil_sms_out', _external=True),
+            friendly_name=self.nickname if self.nickname else 'unknown',
+            rate_plan=app.config.get('RATE_PLAN'),
+        )
+        print(f"Configured webhooks for {sid} ({self.nickname})")
+
+    def send_registered_messsage(self):
+        from mm import twil
+        sid = self.sim_sid
+        twil.messages.create(
+            body=f"Welcome to the {self.network.name} network! Your extension is {self.get_ext_display()}.",
+            from_=app.config['MASTER_PHONE_NUMBER'],
+            to=f"sim:{self.sid}",
+        )
 
 
 # auto-generate extensions for new subscribers
