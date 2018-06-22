@@ -25,10 +25,10 @@ class Dialplan:
         response.say(text)
         return str(response)
 
-    def make_dialout_response(self, *, sim: str=None) -> TwiML:
+    def make_dialout_response(self, *, sim: str=None, from_: str=None) -> TwiML:
         """Dial a number."""
         response = VoiceResponse()
-        dial = Dial()
+        dial = Dial(caller_id=from_)
         if sim:
             dial.sim(sim)
         else:
@@ -98,9 +98,8 @@ class VoiceDialplan(Dialplan):
        print(self.EXT_DIAL_PREFIX)
        if to[1:].startswith(self.EXT_DIAL_PREFIX):  # strip +
            dest_sub = self.get_subscriber_by_dialed_number(network=sub.network, to=to[1:])
-           print(dest_sub.sim_sid)
            if dest_sub:
-               return self.make_dialout_response(sim=dest_sub.sim_sid)
+               return self.make_dialout_response(sim=dest_sub.sim_sid, from_=sub.get_ext_display())
 
        # we dont know what they are trying to do
        # should just try placing a normal call
