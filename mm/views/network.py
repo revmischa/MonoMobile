@@ -8,6 +8,7 @@ from marshmallow import Schema, fields
 class SubscriberSchema(Schema):
     nickname = fields.Str()
     extension = fields.Int()
+    extension_display = fields.Function(lambda s: s.get_ext_display())
 
 class NetworkSchema(Schema):
     id = fields.Int()

@@ -12,12 +12,14 @@ class Config(object):
     TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
 
     # dialplan
-    DIALPLAN_EXT_DIAL_PREFIX = '#'  # prefix for dialing subscribers by extension
+    DIALPLAN_EXT_DIAL_PREFIX = '10'  # prefix for dialing subscribers by extension
 
     # set this to a string to make dev or single-network deployments simple
     DEFAULT_NETWORK = None
     RATE_PLAN = os.environ.get('RATE_PLAN', 'WP983c32f8439200744d4a45992864e9df')
     MASTER_PHONE_NUMBER = '+18774197477'
+
+    REGISTER_URL = 'https://mobile.llolo.lol'
 
 class ProductionConfig(Config):
     DEBUG = False

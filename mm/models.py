@@ -50,8 +50,8 @@ class Subscriber(db.Model):
     onboarded = Column(Boolean, nullable=False, server_default='F')
 
     def get_ext_display(self):
-        # TEMP
-        return f'*{self.extension}'
+        prefix = app.config['DIALPLAN_EXT_DIAL_PREFIX']
+        return f'{prefix}{self.extension}'
 
     def configure_webhooks(self):
         from mm import twil
@@ -69,6 +69,7 @@ class Subscriber(db.Model):
     def send_registered_messsage(self):
         from mm import twil
         sid = self.sim_sid
+        # problem: can't text a SIM directly
         twil.messages.create(
             body=f"Welcome to the {self.network.name} network! Your extension is {self.get_ext_display()}.",
             from_=app.config['MASTER_PHONE_NUMBER'],
