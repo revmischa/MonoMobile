@@ -16,9 +16,7 @@ class Dialplan:
     def make_message_response(self, text: str) -> TwiML:
         """Return a text message."""
         response = MessagingResponse()
-        message = Message()
-        message.body(text)
-        response.append(message)
+        response.message(text)
         return str(response)
 
     def make_say_response(self, text: str) -> TwiML:
@@ -36,7 +34,6 @@ class Dialplan:
         else:
             raise Exception("dialout response did not get anything to dial")
         response.append(dial)
-        print(str(response))
         return str(response)
 
     def get_subscriber(self, sim_sid: str) -> Optional[Subscriber]:
@@ -86,7 +83,7 @@ class SMSDialplan(Dialplan):
             return self.make_message_response("""Ur ext: {sub.get_ext_display()}
             420: test""")
 
-        return self.make_message_response("unknown number")
+        return self.make_message_response("SMS outbound isn't enabled yet")
 
 
 class VoiceDialplan(Dialplan):
@@ -111,4 +108,4 @@ class VoiceDialplan(Dialplan):
            return self.make_say_response("Sorry, this number isn't recognized. Text 42 for help.")
 
        # do dialout...
-       pass
+       return self.make_say_response("Sorry, we have not enabled dial out yet. Let us know if you want it.")
