@@ -32,11 +32,11 @@ class Dialplan:
         response = VoiceResponse()
         dial = Dial()
         if sim:
-            dsim = Sim(sim)
-            dial.append(dsim)
+            dial.sim(sim)
         else:
             raise Exception("dialout response did not get anything to dial")
         response.append(dial)
+        print(str(response))
         return str(response)
 
     def get_subscriber(self, sim_sid: str) -> Optional[Subscriber]:
@@ -51,19 +51,6 @@ class Dialplan:
         ext = to.replace(self.EXT_DIAL_PREFIX, '', 1)
         if not ext:
             return None
-
-
-    def make_dialout_response(self, *, sim: str=None) -> TwiML:
-        """Dial a number."""
-        response = VoiceResponse()
-        dial = Dial()
-        if sim:
-            dsim = Sim(sim)
-            dial.append(dsim)
-        else:
-            raise Exception("dialout response did not get anything to dial")
-        response.append(dial)
-        return str(response)
 
     def get_subscriber(self, sim_sid: str) -> Optional[Subscriber]:
         """Look up subscriber by SIM."""
@@ -112,10 +99,9 @@ class VoiceDialplan(Dialplan):
 
        # are they trying to dial a subscriber by extension?
        print(self.EXT_DIAL_PREFIX)
-       if to.startswith(self.EXT_DIAL_PREFIX):
-           print("MATCH")
-           dest_sub = self.get_subscriber_by_dialed_number(network=sub.network, to=to)
-           print(f" dest sub {dest_sub}")
+       if to[1:].startswith(self.EXT_DIAL_PREFIX):  # strip +
+           dest_sub = self.get_subscriber_by_dialed_number(network=sub.network, to=to[1:])
+           print(dest_sub.sim_sid)
            if dest_sub:
                return self.make_dialout_response(sim=dest_sub.sim_sid)
 
