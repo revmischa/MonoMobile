@@ -53,6 +53,9 @@ class Subscriber(db.Model):
         prefix = app.config['DIALPLAN_EXT_DIAL_PREFIX']
         return f'{prefix}{self.extension}'
 
+    def get_dest_addr(self):
+        return f'sim:{self.sim_sid}'
+
     def configure_webhooks(self):
         from mm import twil
         sid = self.sim_sid
@@ -63,6 +66,7 @@ class Subscriber(db.Model):
             sms_url=url_for('twil_sms_out', _external=True),
             friendly_name=self.nickname if self.nickname else 'unknown',
             rate_plan=app.config.get('RATE_PLAN'),
+            status='active',
         )
         print(f"Configured webhooks for {sid} ({self.nickname})")
 

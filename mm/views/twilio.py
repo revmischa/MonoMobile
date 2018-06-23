@@ -30,6 +30,6 @@ def send_test_sms():
                     .create(
                         body="Hi from Monocle Mobile!",
                         from_='+15104078539',
-                        # to='sim:DE0256f9649bc4fbbc65d3d4c4c55f08b6'
-                        to='+15104078539'
+                        to='sim:DEab9edfc32ff90819cdde794c6a2d917f'
+                        # to='+15104078539'
                     )

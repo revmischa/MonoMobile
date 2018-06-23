@@ -13,10 +13,10 @@ log = logging.getLogger(__name__)
 class Dialplan:
     EXT_DIAL_PREFIX = app.config['DIALPLAN_EXT_DIAL_PREFIX']
 
-    def make_message_response(self, text: str) -> TwiML:
+    def make_message_response(self, from_: str, to: str, text: str) -> TwiML:
         """Return a text message."""
         response = MessagingResponse()
-        response.message(text)
+        response.message(text, to=from_, from_=to)
         return str(response)
 
     def make_say_response(self, text: str) -> TwiML:
@@ -28,7 +28,10 @@ class Dialplan:
     def make_dialout_response(self, *, sim: str=None, from_: str=None) -> TwiML:
         """Dial a number."""
         response = VoiceResponse()
-        dial = Dial(caller_id=from_)
+        if from_:
+            dial = Dial(caller_id=f'+{from_}')
+        else:
+            dial = Dial()
         if sim:
             dial.sim(sim)
         else:
@@ -74,16 +77,16 @@ class SMSDialplan(Dialplan):
     def handle_outbound_sms(self, from_: str, to: str, req: TwilioCallbackRequest):
         sub = self.get_subscriber(sim_sid=from_)
         if not sub:
-            return self.make_message_response(f"You need to register with the network! Go to {self.get_register_url()}")
+            return self.make_message_response(from_, to, f"You need to register with the network! Go to {self.get_register_url()}")
 
         if to == '420':
-            return self.make_message_response("smoke weed EVERY day !")
+            return self.make_message_response(from_, to, "smoke weed EVERY day !")
 
         if len(to) < 10:
-            return self.make_message_response("""Ur ext: {sub.get_ext_display()}
+            return self.make_message_response(from_, to, """Ur ext: {sub.get_ext_display()}
             420: test""")
 
-        return self.make_message_response("SMS outbound isn't enabled yet")
+        return self.make_message_response(from_, to, "SMS outbound isn't enabled yet")
 
 
 class VoiceDialplan(Dialplan):
