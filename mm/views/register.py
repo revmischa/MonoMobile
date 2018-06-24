@@ -2,6 +2,9 @@ from mm import app, db, twil
 from flask import request
 from mm.views import APIBadRequestError
 from mm.models import Subscriber, Network
+import logging
+
+log = logging.getLogger(__name__)
 
 
 @app.route('/api/register', methods=['POST'])
@@ -56,5 +59,6 @@ def api_register():
 
     sub.configure_webhooks()
     # sub.send_registered_messsage()
+    log.info(f"Registered {nickname}")
 
     return "ok"

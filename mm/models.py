@@ -5,6 +5,9 @@ from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import Integer, Text, TIMESTAMP, Boolean
 from sqlalchemy.event import listen
 from functools import partial
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def on_table_create(class_, ddl):
@@ -59,16 +62,18 @@ class Subscriber(db.Model):
     def configure_webhooks(self):
         from mm import twil
         sid = self.sim_sid
-        twil.wireless.sims(sid).update(
+        update = dict(
             voice_method='POST',
             voice_url=url_for('twil_voice_out', _external=True),
             sms_method='POST',
             sms_url=url_for('twil_sms_out', _external=True),
-            friendly_name=self.nickname if self.nickname else 'unknown',
             rate_plan=app.config.get('RATE_PLAN'),
             status='active',
         )
-        print(f"Configured webhooks for {sid} ({self.nickname})")
+        if self.nickname:
+            update['unique_name'] = f"{self.id}:{self.nickname}"
+        twil.wireless.sims(sid).update(**update)
+        log.info(f"Configured webhooks for {sid} ({self.nickname})")
 
     def send_registered_messsage(self):
         from mm import twil
