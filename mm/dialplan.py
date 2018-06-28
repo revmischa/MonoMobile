@@ -25,7 +25,7 @@ class Dialplan:
         response.say(text)
         return str(response)
 
-    def make_dialout_response(self, *, sim: str=None, from_: str=None) -> TwiML:
+    def make_dialout_response(self, *, sim: str=None, to: str=None, from_: str=None) -> TwiML:
         """Dial a number."""
         response = VoiceResponse()
         if from_:
@@ -34,6 +34,8 @@ class Dialplan:
             dial = Dial()
         if sim:
             dial.sim(sim)
+        elif to:
+            dial.number(to)
         else:
             raise Exception("dialout response did not get anything to dial")
         response.append(dial)
@@ -110,4 +112,4 @@ class VoiceDialplan(Dialplan):
            return self.make_say_response("Sorry, this number isn't recognized. Text 42 for help.")
 
        # do dialout...
-       return self.make_say_response("Sorry, we have not enabled dial out yet. Let us know if you want it.")
+       return self.make_dialout_response(to=to)
