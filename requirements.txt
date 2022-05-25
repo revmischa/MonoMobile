@@ -34,7 +34,7 @@ psycopg2==2.7.5
 ptyprocess==0.5.2
 py==1.5.3
 Pygments==2.2.0
-PyJWT==1.6.4
+PyJWT==2.4.0
 PySocks==1.6.8
 pytest==3.6.2
 python-dateutil==2.7.3
